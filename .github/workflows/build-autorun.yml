@@ -1,0 +1,30 @@
+name: Build Autorun (AMD64 / FEX)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          df -h /
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build (AMD64 runtime with FEX)
+        run: sh build.sh --jobs "$(nproc)"
+
+      - name: Upload SD card archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: autorun-sd-card
+          path: horizon-wine/build-autorun/autorun-*.zip
+          if-no-files-found: error
+          
