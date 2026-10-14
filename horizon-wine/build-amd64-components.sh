@@ -53,6 +53,8 @@ docker run --rm --network none -v "$root:/work" -w /work \
     -e WINE_NX_JOBS="$jobs" \
     -e NX_MESA="${WINE_NX_MESA_SWITCH_DIR:-}" -e NX_FEX="$fex" -e NX_BOOT_BUNDLE="$boot_bundle" \
     "${WINE_NX_DEVKIT_IMAGE:-$(cat "$root/horizon-wine/switch-dev.txt")}" sh -ec '
+    # The tree belongs to the host user, not to root in this container.
+    git config --global --add safe.directory /work/horizon-wine/vendor/box64
     cmake -S horizon-wine -B "$NX_BUILD" -G Ninja \
         -DCMAKE_TOOLCHAIN_FILE=/work/horizon-wine/cmake/switch-devkitA64.cmake \
         -DWINE_NX_PE_BUILD_DIR="$NX_PE" -DWINE_NX_AMD64=ON -DWINE_NX_FEX="$NX_FEX" \
